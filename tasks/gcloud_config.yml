@@ -1,3 +1,9 @@
+---
+
+- name: "Force 'gcloud_key' to be set as string not as vault for next filters"
+  set_fact:
+    gcloud_key: "{{ gcloud_key }}"
+
 - name: Create temporary file
   tempfile:
      state: file
