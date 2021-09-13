@@ -25,7 +25,7 @@
 - name: Set default application credentials
   template:
     src: env.sh.j2
-    dest: ~/bash.d/20_gcloud.bash
+    dest: ~/.bash.d/20_gcloud.bash
     mode: 0700
 
 - name: Remove gcloud servicekey
