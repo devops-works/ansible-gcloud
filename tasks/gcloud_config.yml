@@ -1,19 +1,18 @@
 ---
-
 - name: "Force 'gcloud_key' to be set as string not as vault for next filters"
   set_fact:
     gcloud_key: "{{ gcloud_key }}"
 
 - name: Create temporary file
   tempfile:
-     state: file
-     suffix: .json
+    state: file
+    suffix: .json
   register: __gcloud_temp_key
 
 - name: Copy temp file
   copy:
-      content: '{{ gcloud_key }}'
-      dest: '{{ __gcloud_temp_key.path }}'
+    content: '{{ gcloud_key }}'
+    dest: '{{ __gcloud_temp_key.path }}'
 
 - name: Activate service account
   shell: "CLOUDSDK_PYTHON_SITEPACKAGES=1 gcloud auth activate-service-account {{ gcloud_key | json_query('client_email') }} --key-file {{ __gcloud_temp_key.path }}"
@@ -24,11 +23,11 @@
 
 - name: Set default application account
   copy:
-      content: '{{ gcloud_key }}'
-      dest: ~/.config/gcloud/application_default_credentials.json
-      mode: 0600
-      owner: root
-      group: root
+    content: '{{ gcloud_key }}'
+    dest: ~/.config/gcloud/application_default_credentials.json
+    mode: 0600
+    owner: root
+    group: root
 
 - name: Remove gcloud servicekey
   file:
