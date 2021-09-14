@@ -30,12 +30,6 @@
       owner: root
       group: root
 
-# - name: Set default application credentials
-#   template:
-#     src: env.sh.j2
-#     dest: ~/.bash.d/20_gcloud.bash
-#     mode: 0700
-
 - name: Remove gcloud servicekey
   file:
     path: "{{ __gcloud_temp_key.path }}"
