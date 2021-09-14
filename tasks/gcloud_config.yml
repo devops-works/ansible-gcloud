@@ -22,11 +22,19 @@
   command: gcloud config set core/project {{ gcloud_key | json_query('project_id') }}
   when: gcloud_set_as_default
 
-- name: Set default application credentials
-  template:
-    src: env.sh.j2
-    dest: ~/.bash.d/20_gcloud.bash
-    mode: 0700
+- name: Set default application account
+  copy:
+      content: '{{ gcloud_key }}'
+      dest: ~/.config/gcloud/application_default_credentials.json
+      mode: 0600
+      owner: root
+      group: root
+
+# - name: Set default application credentials
+#   template:
+#     src: env.sh.j2
+#     dest: ~/.bash.d/20_gcloud.bash
+#     mode: 0700
 
 - name: Remove gcloud servicekey
   file:
