@@ -12,8 +12,10 @@
   apt:
     pkg: google-cloud-sdk
     state: present
+  when: not ansible_check_mode
 
 - name: Installs google-cloud-sdk extras
   apt:
     pkg: "{{ gcloud_extras }}"
     state: present
+  when: not ansible_check_mode
