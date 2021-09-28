@@ -5,11 +5,14 @@
 
 - name: Create config directory
   file:
-    path: "~{{ gcloud_config_user }}/.config/gcloud/"
+    path: "~{{ gcloud_config_user }}/{{ item }}"
     state: directory
     mode: 0700
     owner: "{{ gcloud_config_user }}"
     group: "{{ gcloud_config_user }}"
+  loop:
+    - ".config/"
+    - ".config/gcloud/"
 
 - name: Set default application account
   copy:
