@@ -8,22 +8,31 @@
     path: "~{{ gcloud_config_user }}/.config/gcloud/"
     state: directory
     mode: 0700
+    owner: "{{ gcloud_config_user }}"
+    group: "{{ gcloud_config_user }}"
 
 - name: Set default application account
   copy:
     content: '{{ gcloud_key }}'
     dest: "~{{ gcloud_config_user }}/.config/gcloud/application_default_credentials.json"
     mode: 0600
-    owner: root
-    group: root
+    owner: "{{ gcloud_config_user }}"
+    group: "{{ gcloud_config_user }}"
   register: __gcloud_new_key
 
 - name: Activate service account
-  become_user: gcloud_config_user
-  shell: "CLOUDSDK_PYTHON_SITEPACKAGES=1 gcloud auth activate-service-account {{ gcloud_key | json_query('client_email') }} --key-file ~/.config/gcloud/application_default_credentials.json"
+  # become_user: gcloud_config_user
+  shell: >
+    su {{ gcloud_config_user }}
+    -s /bin/bash -lc 
+    "CLOUDSDK_PYTHON_SITEPACKAGES=1 gcloud auth activate-service-account {{ gcloud_key | json_query('client_email') }} --key-file ~/.config/gcloud/application_default_credentials.json"
   when: __gcloud_new_key is changed
   
 - name: Sets default project
-  become_user: gcloud_config_user
-  command: gcloud config set core/project {{ gcloud_key | json_query('project_id') }}
+  # become_user: gcloud_config_user
+  shell: >
+    su {{ gcloud_config_user }}
+    -s /bin/bash -lc 
+     gcloud config set core/project {{ gcloud_key | json_query('project_id') }}
+  # command: gcloud config set core/project {{ gcloud_key | json_query('project_id') }}
   when: gcloud_set_as_default and __gcloud_new_key is changed
