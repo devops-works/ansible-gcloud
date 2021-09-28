@@ -3,3 +3,5 @@ gcloud_config_only: no
 gcloud_extras:
   - google-cloud-sdk-app-engine-python
   - google-cloud-sdk-app-engine-python-extras
+
+gcloud_config_user: root
