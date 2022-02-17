@@ -1,11 +1,24 @@
-- include_tasks: check_vars.yml
+---
+- include_tasks: 
+    file: check_vars.yml
+    apply:
+      tags: ["gcloud", "gcloud:check", "check"]
   when: gcloud_config_only or gcloud_project_id is defined
-  tags: ["gcloud", "gcloud:check", "check"]
+  tags:
+    - always
 
-- include_tasks: gcloud.yml
+- include_tasks:
+    file: gcloud.yml
+    apply:
+      tags: ["gcloud"]
   when: not gcloud_config_only
-  tags: ["gcloud"]
+  tags:
+    - always
 
-- include_tasks: gcloud_config.yml
+- include_tasks:
+    file: gcloud_config.yml
+    apply:
+      tags: ["gcloud", "gcloud:config"]
   when: gcloud_key is defined
-  tags: ["gcloud", "gcloud:config"]
+  tags:
+    - always
