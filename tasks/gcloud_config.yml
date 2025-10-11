@@ -1,10 +1,10 @@
 ---
 - name: "Force 'gcloud_key' to be set as string not as vault for next filters"
-  set_fact:
+  ansible.builtin.set_fact:
     gcloud_key: "{{ gcloud_key }}"
 
 - name: Create config directory
-  file:
+  ansible.builtin.file:
     path: "~{{ gcloud_config_user }}/{{ item }}"
     state: directory
     mode: 0700
@@ -15,7 +15,7 @@
     - ".config/gcloud/"
 
 - name: Set default application account
-  copy:
+  ansible.builtin.copy:
     content: '{{ gcloud_key }}'
     dest: "~{{ gcloud_config_user }}/.config/gcloud/application_default_credentials.json"
     mode: 0600
@@ -25,17 +25,17 @@
 
 - name: Activate service account
   # become_user: gcloud_config_user
-  shell: >
+  ansible.builtin.shell: >
     su {{ gcloud_config_user }}
-    -s /bin/bash -lc 
+    -s /bin/bash -lc
     "CLOUDSDK_PYTHON_SITEPACKAGES=1 gcloud auth activate-service-account {{ gcloud_key | json_query('client_email') }} --key-file ~/.config/gcloud/application_default_credentials.json"
   when: __gcloud_new_key is changed
-  
+
 - name: Sets default project
   # become_user: gcloud_config_user
-  shell: >
+  ansible.builtin.shell: >
     su {{ gcloud_config_user }}
-    -s /bin/bash -lc 
+    -s /bin/bash -lc
      gcloud config set core/project {{ gcloud_key | json_query('project_id') }}
   # command: gcloud config set core/project {{ gcloud_key | json_query('project_id') }}
   when: gcloud_set_as_default and __gcloud_new_key is changed

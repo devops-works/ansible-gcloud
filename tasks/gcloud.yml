@@ -1,21 +1,29 @@
-- name: Adds gcloud key
-  apt_key:
+- name: Ensure /etc/apt/keyrings directory exists
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Download gcloud GPG key
+  ansible.builtin.get_url:
     url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-    state: present
+    dest: /etc/apt/keyrings/gcloud.gpg
+    mode: '0644'
+    force: false
 
 - name: Adds gcloud repos
-  apt_repository:
-    repo: "deb http://packages.cloud.google.com/apt cloud-sdk main"
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/gcloud.gpg] http://packages.cloud.google.com/apt cloud-sdk main"
     update_cache: yes
 
 - name: Installs google-cloud-sdk
-  apt:
+  ansible.builtin.apt:
     pkg: google-cloud-sdk
     state: present
   when: not ansible_check_mode
 
 - name: Installs google-cloud-sdk extras
-  apt:
+  ansible.builtin.apt:
     pkg: "{{ gcloud_extras }}"
     state: present
   when: not ansible_check_mode

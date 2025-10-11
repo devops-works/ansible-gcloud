@@ -1,5 +1,5 @@
 ---
-- include_tasks: 
+- ansible.builtin.include_tasks:
     file: check_vars.yml
     apply:
       tags: ["gcloud", "gcloud:check", "check"]
@@ -7,7 +7,7 @@
   tags:
     - always
 
-- include_tasks:
+- ansible.builtin.include_tasks:
     file: gcloud.yml
     apply:
       tags: ["gcloud"]
@@ -15,7 +15,7 @@
   tags:
     - always
 
-- include_tasks:
+- ansible.builtin.include_tasks:
     file: gcloud_config.yml
     apply:
       tags: ["gcloud", "gcloud:config"]

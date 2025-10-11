@@ -1,4 +1,4 @@
 - name: Checking that required variables are set
-  fail: 
+  ansible.builtin.fail:
     msg: "{{ gcloud_key }} is not defined"
   when: item is not defined
