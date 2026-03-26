@@ -36,6 +36,6 @@
   ansible.builtin.shell: >
     su {{ gcloud_config_user }}
     -s /bin/bash -lc
-     gcloud config set core/project {{ gcloud_key | json_query('project_id') }}
+    "gcloud config set core/project {{ gcloud_key | json_query('project_id') }}"
   # command: gcloud config set core/project {{ gcloud_key | json_query('project_id') }}
   when: gcloud_set_as_default and __gcloud_new_key is changed
