@@ -19,7 +19,8 @@
 - name: Adds gcloud repos
   ansible.builtin.apt_repository:
     repo: "deb [signed-by=/etc/apt/keyrings/gcloud.gpg] https://packages.cloud.google.com/apt cloud-sdk main"
-    update_cache: yes
+    filename: packages_cloud_google_com_apt
+    update_cache: true
 
 - name: Installs google-cloud-sdk
   ansible.builtin.apt:
