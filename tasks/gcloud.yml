@@ -7,13 +7,18 @@
 - name: Download gcloud GPG key
   ansible.builtin.get_url:
     url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-    dest: /etc/apt/keyrings/gcloud.gpg
+    dest: /etc/apt/keyrings/gcloud.asc
     mode: '0644'
     force: false
 
+- name: Dearmor gcloud GPG key
+  ansible.builtin.shell:
+    cmd: gpg --dearmor < /etc/apt/keyrings/gcloud.asc > /etc/apt/keyrings/gcloud.gpg
+    creates: /etc/apt/keyrings/gcloud.gpg
+
 - name: Adds gcloud repos
   ansible.builtin.apt_repository:
-    repo: "deb [signed-by=/etc/apt/keyrings/gcloud.gpg] http://packages.cloud.google.com/apt cloud-sdk main"
+    repo: "deb [signed-by=/etc/apt/keyrings/gcloud.gpg] https://packages.cloud.google.com/apt cloud-sdk main"
     update_cache: yes
 
 - name: Installs google-cloud-sdk
