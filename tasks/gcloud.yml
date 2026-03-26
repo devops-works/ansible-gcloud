@@ -7,14 +7,9 @@
 - name: Download gcloud GPG key
   ansible.builtin.get_url:
     url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-    dest: /etc/apt/keyrings/gcloud.asc
+    dest: /etc/apt/keyrings/gcloud.gpg
     mode: '0644'
-    force: false
-
-- name: Dearmor gcloud GPG key
-  ansible.builtin.shell:
-    cmd: gpg --dearmor < /etc/apt/keyrings/gcloud.asc > /etc/apt/keyrings/gcloud.gpg
-    creates: /etc/apt/keyrings/gcloud.gpg
+    force: true
 
 - name: Adds gcloud repos
   ansible.builtin.apt_repository:
