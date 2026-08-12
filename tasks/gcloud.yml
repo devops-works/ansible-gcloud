@@ -1,12 +1,28 @@
+- name: Ensures apt keyrings directory exists
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+# The URL serves an ASCII-armored key, hence the .asc extension: apt 3.0
+# (Debian 13) rejects armored content stored in a .gpg file.
 - name: Download gcloud GPG key
   ansible.builtin.get_url:
     url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-    dest: /etc/apt/trusted.gpg.d/cloud.google.gpg
+    dest: /etc/apt/keyrings/cloud.google.asc
     mode: '0644'
+    force: true
+
+# A leftover armored key here makes apt ignore the keyring and breaks *all*
+# repositories, so it has to go before any cache update.
+- name: Removes legacy gcloud key from trusted.gpg.d
+  ansible.builtin.file:
+    path: /etc/apt/trusted.gpg.d/cloud.google.gpg
+    state: absent
 
 - name: Adds gcloud repos
   ansible.builtin.apt_repository:
-    repo: "deb https://packages.cloud.google.com/apt cloud-sdk main"
+    repo: "deb [signed-by=/etc/apt/keyrings/cloud.google.asc] https://packages.cloud.google.com/apt cloud-sdk main"
     filename: packages_cloud_google_com_apt
     update_cache: false
 
