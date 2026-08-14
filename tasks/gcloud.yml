@@ -20,11 +20,29 @@
     path: /etc/apt/trusted.gpg.d/cloud.google.gpg
     state: absent
 
+- name: Installs deb822_repository requirements
+  ansible.builtin.apt:
+    pkg: python3-debian
+    state: present
+  when: not ansible_check_mode
+
 - name: Adds gcloud repos
-  ansible.builtin.apt_repository:
-    repo: "deb [signed-by=/etc/apt/keyrings/cloud.google.asc] https://packages.cloud.google.com/apt cloud-sdk main"
-    filename: packages_cloud_google_com_apt
-    update_cache: false
+  ansible.builtin.deb822_repository:
+    name: packages_cloud_google_com_apt
+    types: deb
+    uris: https://packages.cloud.google.com/apt
+    suites: cloud-sdk
+    components: main
+    signed_by: /etc/apt/keyrings/cloud.google.asc
+    state: present
+    enabled: true
+
+# deb822_repository writes a .sources file; drop the one-line list the
+# previous apt_repository-based versions of this role left behind.
+- name: Removes legacy gcloud sources.list entry
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/packages_cloud_google_com_apt.list
+    state: absent
 
 - name: Installs google-cloud-sdk
   ansible.builtin.apt:
