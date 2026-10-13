@@ -44,9 +44,9 @@
     path: /etc/apt/sources.list.d/packages_cloud_google_com_apt.list
     state: absent
 
-- name: Installs google-cloud-sdk
+- name: Installs google-cloud-cli
   ansible.builtin.apt:
-    pkg: google-cloud-sdk
+    pkg: google-cloud-cli
     state: present
     update_cache: true
   when: not ansible_check_mode
