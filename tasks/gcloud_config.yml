@@ -3,6 +3,13 @@
   ansible.builtin.set_fact:
     gcloud_key: "{{ gcloud_key }}"
 
+# ansible-core 2.19+ no longer turns a JSON string into a dict when templating,
+# so parse the key explicitly. A key given as a YAML mapping is used as is.
+- name: Parse the service account key
+  ansible.builtin.set_fact:
+    __gcloud_key: "{{ (gcloud_key | from_json) if gcloud_key is string else gcloud_key }}"
+  no_log: true
+
 - name: Create config directory
   ansible.builtin.file:
     path: "~{{ gcloud_config_user }}/{{ item }}"
@@ -28,7 +35,7 @@
   ansible.builtin.shell: >
     su {{ gcloud_config_user }}
     -s /bin/bash -lc
-    "CLOUDSDK_PYTHON_SITEPACKAGES=1 gcloud auth activate-service-account {{ gcloud_key | json_query('client_email') }} --key-file ~/.config/gcloud/application_default_credentials.json"
+    "CLOUDSDK_PYTHON_SITEPACKAGES=1 gcloud auth activate-service-account {{ __gcloud_key.client_email }} --key-file ~/.config/gcloud/application_default_credentials.json"
   when: __gcloud_new_key is changed
 
 - name: Sets default project
@@ -36,6 +43,5 @@
   ansible.builtin.shell: >
     su {{ gcloud_config_user }}
     -s /bin/bash -lc
-    "gcloud config set core/project {{ gcloud_key | json_query('project_id') }}"
-  # command: gcloud config set core/project {{ gcloud_key | json_query('project_id') }}
+    "gcloud config set core/project {{ __gcloud_key.project_id }}"
   when: gcloud_set_as_default and __gcloud_new_key is changed
